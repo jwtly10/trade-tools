@@ -1,0 +1,5 @@
+# Python env setup
+venv
+
+#Cached files
+*.pyc
