@@ -11,7 +11,6 @@ def get_todays_pnl(trades):
         if dt.strptime(trade.get("closed"), time_format).date() == dt.today().date():
             pnl = pnl + trade.get("swap") + trade.get("profit")
            
-           
     return pnl
 
 
@@ -29,7 +28,7 @@ def get_average_trade_time(trades, trade_type):
         delta = t2-t1
 
         if trade_type:
-            if trade.get('outcome') == "win": # Average outcomening trades
+            if trade.get('outcome') == "win": # Average winning trades
                 ntrades+=1
                 print(f"Opened  : {trade.get('opened')} Closed: {trade.get('closed')} - Diff: {delta.total_seconds()} - Profit: {trade.get('profit')}")
                 diff = diff + delta.total_seconds()
