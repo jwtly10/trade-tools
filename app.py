@@ -12,13 +12,17 @@ conn = mysql.connector.connect(user=os.environ.get("USERNAME"), password=os.envi
 app = Flask(__name__)
 
 
-@app.route("/")
-def get_trade():
+@app.route("/gettrades")
+def get_trades():
     accountID = request.args.get('accountID')
     if accountID:
-        return jsonify(data.get_trades(accountID, conn)), 200
+        trades = data.get_trades(accountID, conn) 
+        if len(trades)==0:
+            return f"No trades found for Account {accountID}", 400
+        else:
+            return jsonify(data.get_trades(accountID, conn)), 200
     else:
-        return 'Trade-tools-api'
+        return 'Account id is missing', 400
 
 
 @app.route('/newtrade', methods=['POST'])
