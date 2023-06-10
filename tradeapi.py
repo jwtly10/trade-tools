@@ -54,22 +54,9 @@ def trade_save(trade):
     VALUES
     (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """
-    
-    ticketID = trade.get("ticketID")
-    accountID = trade.get("accountID")
-    tradeType = trade.get("type")
-    symbol = trade.get("symbol")
-    price = trade.get("price")
-    sl = trade.get("sl")
-    tp = trade.get("tp")
-    swap = trade.get("swap")
-    profit = trade.get("profit")
-    closed = trade.get("closed")
-    created = trade.get("created")
-    outcome = trade.get("outcome")
-    
-    val = ticketID, accountID, tradeType, symbol, price, sl, tp, swap, profit, closed, created, outcome 
-    
+
+    val = trade.get("ticketID"),trade.get("accountID"),trade.get("type"),trade.get("symbol"),trade.get("price"),trade.get("sl"),trade.get("tp"),trade.get("swap"),trade.get("profit"),trade.get("closed"),trade.get("created"), trade.get("outcome")
+
     try:
         cursor.execute(sql, val)
         conn.commit()
