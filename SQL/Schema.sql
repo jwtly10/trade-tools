@@ -1,6 +1,6 @@
 CREATE DATABASE trade_tools_db;
 
-CREATE TABLE trades (
+CREATE TABLE trades_tb (
 	ticketID INT NOT NULL,
     accountID INT NOT NULL, 
     tradeType VARCHAR(25) NOT NULL, 
@@ -10,10 +10,16 @@ CREATE TABLE trades (
     tp DECIMAL(10,2),
     swap DECIMAL(10,2), 
     profit DECIMAL(10,2), 
-    closed DATETIME,
     created DATETIME NOT NULL, 
-    outcome VARCHAR(10),
+    closed DATETIME DEFAULT NULL,
+    outcome VARCHAR(10) DEFAULT NULL,
     PRIMARY KEY(ticketID, accountID)
+);
+CREATE TABLE accounts_tb (
+	accountID INT NOT NULL PRIMARY KEY,
+    accountSize INT NOT NULL,
+    accountState VARCHAR(30) NOT NULL,
+    created datetime DEFAULT NOW() NOT NULL
 );
 
 
