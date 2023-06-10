@@ -15,8 +15,10 @@ app = Flask(__name__)
 @app.route("/")
 def get_trade():
     accountID = request.args.get('accountID')
-
-    return jsonify(get_trades(accountID)), 200
+    if accountID:
+        return jsonify(get_trades(accountID)), 200
+    else:
+        return 'Trade-tools-api'
 
 
 @app.route('/newtrade', methods=['POST'])
