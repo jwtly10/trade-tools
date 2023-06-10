@@ -1,4 +1,5 @@
 import traceback
+import utils.converters as converters
 
 def get_trades(accountID, conn):
     cursor = conn.cursor()
@@ -25,6 +26,7 @@ def trade_save(trade, conn):
     (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """
 
+    trade = converters.determine_outcome(trade)
     val = trade.get("ticketID"),trade.get("accountID"),trade.get("type"),trade.get("symbol"),trade.get("price"),trade.get("sl"),trade.get("tp"),trade.get("swap"),trade.get("profit"),trade.get("closed"),trade.get("created"), trade.get("outcome")
 
     try:
@@ -41,7 +43,8 @@ def bulk_save_trades(trades, conn):
 
     val_trades = []
     for trade in trades:
-         val_trades.append((trade.get("ticketID"),trade.get("accountID"),trade.get("type"),trade.get("symbol"),trade.get("price"),trade.get("sl"),trade.get("tp"),trade.get("swap"),trade.get("profit"),trade.get("closed"),trade.get("created"), trade.get("outcome")))
+        trade = converters.determine_outcome(trade)
+        val_trades.append((trade.get("ticketID"),trade.get("accountID"),trade.get("type"),trade.get("symbol"),trade.get("price"),trade.get("sl"),trade.get("tp"),trade.get("swap"),trade.get("profit"),trade.get("closed"),trade.get("created"), trade.get("outcome")))
 
     sql = """
     INSERT INTO trades_tb 

@@ -15,12 +15,12 @@ def get_average_trade_time(trades, winning_trade):
         delta = t2-t1
 
         if winning_trade:
-            if trade.get('win') == "True": # Average winning trades
+            if trade.get('outcome') == "Win": # Average outcomening trades
                 ntrades+=1
                 print(f"Created: {trade.get('created')} Closed: {trade.get('closed')} - Diff: {delta.total_seconds()} - Profit: {trade.get('profit')}")
                 diff = diff + delta.total_seconds()
         else:
-            if trade.get('win') == "False": # Average losing trades
+            if trade.get('outcome') == "Loss": # Average losing trades
                 ntrades+=1
                 print(f"Created: {trade.get('created')} Closed: {trade.get('closed')} - Diff: {delta.total_seconds()} - Profit: {trade.get('profit')}")
                 diff = diff + delta.total_seconds()
