@@ -7,7 +7,7 @@ conn = mysql.connector.connect(user=dev.username, password=dev.password, host=de
 
 app = Flask(__name__)
 
-@app.route("/", methods=['GET'])
+@app.route("/")
 def home():
     return "Trade Tools Running."
 
