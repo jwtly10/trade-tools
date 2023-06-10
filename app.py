@@ -1,15 +1,27 @@
 from flask import Flask, jsonify, request
 import os
 import mysql.connector
-import services.data_queries as data
 from dotenv import load_dotenv
-
+import services.data_queries as data
+import services.statistics as stats
 if not os.environ.get('IS_HEROKU', None):
     load_dotenv()
 
 conn = mysql.connector.connect(user=os.environ.get("USERNAME"), password=os.environ.get("PASSWORD"), host=os.environ.get("HOST"), database=os.environ.get("DATABASE"))
 
 app = Flask(__name__)
+
+@app.route("/gettradestats")
+def get_trade_stats():
+    stats_json = {}
+    accountID = request.args.get('accountID')
+    trade_type = request.args.get('type')
+    trades = data.get_trades(accountID, conn)
+    stats_json.update({"average_open_time": stats.get_average_trade_time(trades, trade_type.lower())})
+ 
+
+    return jsonify(stats_json)
+
 
 
 @app.route("/gettrades")
