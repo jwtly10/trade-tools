@@ -7,21 +7,43 @@ conn = mysql.connector.connect(user=dev.username, password=dev.password, host=de
 
 app = Flask(__name__)
 
-# @app.route("/")
-# def show_trades():
-#     return jsonify(trades)
+@app.route("/")
+def get_trade():
+    accountID = request.args.get('accountID')
+
+    return jsonify(get_trades(accountID)), 200
+
 
 @app.route('/newtrade', methods=['POST'])
 def add_new_trade():
     trade = request.get_json()
     trade_save(trade)
+
     return 'New Trade Saved', 200
+
 
 @app.route('/bulktrades', methods=['POST'])
 def bulk_upload_trades():
     trades = request.get_json()
     bulk_save_trades(trades)
+
     return 'Bulk Trades Upload', 200
+
+
+def get_trades(accountID):
+    cursor = conn.cursor()
+    sql = """
+    SELECT ticketID, accountID, tradeType, symbol, price, sl, tp, swap, profit, closed, opened, outcome
+    FROM trades_tb
+    WHERE accountID=%s
+    """
+    val = accountID
+
+    cursor.execute(sql, (val,))
+    res = cursor.fetchall()
+    cursor.close()
+    return res
+
 
 def trade_save(trade):
     cursor = conn.cursor()
@@ -51,9 +73,11 @@ def trade_save(trade):
     try:
         cursor.execute(sql, val)
         conn.commit()
+        cursor.close()
     except Exception:
         print(traceback.format_exc())
         conn.rollback()
+        cursor.close()
 
 def bulk_save_trades(trades):
     cursor = conn.cursor()
@@ -72,6 +96,8 @@ def bulk_save_trades(trades):
     try: 
         cursor.executemany(sql, val_trades)
         conn.commit()
+        cursor.close()
     except Exception:
         print(traceback.format_exc())
         conn.rollback()
+        cursor.close()
