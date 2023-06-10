@@ -18,10 +18,10 @@ def get_trade_stats():
     trade_type = request.args.get('type')
     trades = data.get_trades(accountID, conn)
     stats_json.update({"average_open_time": stats.get_average_trade_time(trades, trade_type.lower())})
+    stats_json.update({"todays_pnl": stats.get_todays_pnl(trades)})
  
 
     return jsonify(stats_json)
-
 
 
 @app.route("/gettrades")

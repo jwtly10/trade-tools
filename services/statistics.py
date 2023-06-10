@@ -1,7 +1,27 @@
 from datetime import datetime as dt
 
+
+time_format = "%Y-%m-%d %H:%M:%S"
+
+
+def get_todays_pnl(trades):
+    pnl=0
+    todays_trades=[] 
+
+    for trade in trades:
+        if dt.strptime(trade.get("closed"), time_format).date() == dt.today().date():
+           todays_trades.append(trade) 
+           
+    if len(todays_trades)==0:
+        return "N/A"
+    else:
+        for trade in todays_trades:
+            pnl = pnl + trade.get("swap") + trade.get("profit")
+            
+    return pnl
+
+
 def get_average_trade_time(trades, trade_type):
-    time_format = "%Y-%m-%d %H:%M:%S"
     diff=0
     ntrades=0
     if trade_type: 
