@@ -3,21 +3,21 @@ import pandas as pd
 import performance
 
 def main():
-    # trades = readTradeCSVFile('initial_load.csv')
+    # trades = read_trade_csv_file('initial_load.csv')
 
     # Local list of trades for testing performance
     # instead of reading from file every time
     trades = performance.tradeJSON
     # print(trades)
 
-    trades = determinoutcome(trades)
+    trades = determine_outcome(trades)
     avgtradetime = getavgtradetime(trades, True)
     print(avgtradetime)
     avgtradetime = getavgtradetime(trades, False)
     print(avgtradetime)
 
 
-def determinoutcome(trades):
+def determine_outcome(trades):
     for trade in trades:
         if (trade.get('swap') + trade.get('profit') > 100):
             trade.update({'win':'True'})
@@ -58,7 +58,7 @@ def getavgtradetime(trades, winning_trade):
     return diff / ntrades
 
 
-def readTradeCSVFile(inputfile):
+def read_trade_csv_file(inputfile):
     trades = []
     trade = {}
 

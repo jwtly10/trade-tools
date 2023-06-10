@@ -3,3 +3,6 @@ venv
 
 #Cached files
 *.pyc
+
+
+server_settings*
