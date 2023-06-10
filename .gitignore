@@ -6,3 +6,5 @@ venv
 
 # Env vars
 .env
+
+/SQL
