@@ -7,6 +7,10 @@ conn = mysql.connector.connect(user=dev.username, password=dev.password, host=de
 
 app = Flask(__name__)
 
+@app.route("/", methods=['GET'])
+def home():
+    return "Trade Tools Running."
+
 @app.route("/")
 def get_trade():
     accountID = request.args.get('accountID')
