@@ -7,4 +7,5 @@ venv
 # Env vars
 .env
 
+/static
 /SQL

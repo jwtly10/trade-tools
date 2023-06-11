@@ -1,8 +1,15 @@
 from flask import Flask, jsonify, request
+import os
+from os.path import join, dirname, realpath
+
+from numpy import who
 import services.trade_service as trade
 import services.stats_service as stats
 
 app = Flask(__name__)
+
+UPLOAD_FOLDER = 'static/files'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/gettradestats")
 def get_trade_stats():
@@ -39,6 +46,16 @@ def bulk_upload_trades():
     trades = request.get_json()
     return trade.bulk_save_trades(trades)
 
+
+@app.route('/csvbulktrades', methods=['POST'])
+def upload_file():
+    accountID  = request.args.get("accountID")
+    uploaded_file = request.files['file']
+    if uploaded_file.filename != '':
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
+        uploaded_file.save(file_path)
+    
+    return trade.bulk_save_trades_from_csv(file_path, accountID)
 
 if __name__ == '__main__':
     app.run()
