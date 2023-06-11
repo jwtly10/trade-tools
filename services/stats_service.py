@@ -1,7 +1,18 @@
 from datetime import datetime as dt
-
-
+import services.trade_service as trade
 time_format = "%Y-%m-%d %H:%M:%S"
+
+def build_statistics(accountID):
+    stats_json = {}
+    trades = []
+    trades = trade.get_trades(accountID)
+
+    stats_json.update({"average_open_time":
+                       get_average_trade_time(trades, trade_type.lower())})
+    stats_json.update({"todays_pnl": 
+                       get_todays_pnl(trades)})
+
+    return stats_json
 
 
 def get_todays_pnl(trades):
@@ -12,6 +23,11 @@ def get_todays_pnl(trades):
             pnl = pnl + trade.get("swap") + trade.get("profit")
            
     return pnl
+
+
+def get_days_since_first_trade(trades):
+    print("Not Implemented Yet")     
+
 
 
 def get_average_trade_time(trades, trade_type):
