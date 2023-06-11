@@ -15,21 +15,22 @@ app = Flask(__name__)
 def get_trade_stats():
     stats_json = {}
     accountID = request.args.get('accountID')
-    trade_type = request.args.get('type')
+    trade_type = str(request.args.get('type'))
     trades = data.get_trades(accountID, conn)
     stats_json.update({"average_open_time": stats.get_average_trade_time(trades, trade_type.lower())})
     stats_json.update({"todays_pnl": stats.get_todays_pnl(trades)})
  
 
-    return jsonify(stats_json)
+    return jsonify(stats_json), 200
 
 
 @app.route("/gettrades")
 def get_trades():
+    trades=[]
     accountID = request.args.get('accountID')
     if accountID:
         trades = data.get_trades(accountID, conn) 
-        if len(trades)==0:
+        if not trades: 
             return f"No trades found for Account {accountID}", 400
         else:
             return jsonify(data.get_trades(accountID, conn)), 200
