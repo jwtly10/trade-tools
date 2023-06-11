@@ -21,7 +21,7 @@ def read_trade_csv_file(inputfile):
            trade.update({'swap':df.iloc[row]['swap']})
            trade.update({'profit':df.iloc[row]['profit']})
            trade.update({'closed':df.iloc[row]['closed']})
-           trade.update({'created':df.iloc[row]['created']})
+           trade.update({'opened':df.iloc[row]['created']})
                
            trades.append(trade.copy())
         except Exception as e:
