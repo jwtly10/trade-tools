@@ -56,7 +56,7 @@ def get_average_trade_time(trades, trade_type):
         t2 = dt.strptime(trade.get('closed'), time_format)
         delta = t2-t1
 
-        if trade_type:
+        if trade_type=='win':
             if trade.get('outcome') == "win": # Average winning trades
                 ntrades+=1
                 diff = diff + delta.total_seconds()
