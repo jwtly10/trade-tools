@@ -22,8 +22,26 @@ def build_statistics(accountID):
     stats_json.update({"days_since_first_trade":
                        get_days_since_first_trade(stats_json.get("first_trade"))})
 
+    stats_json.update({"average_return_per_trade_all":
+                      average_return_per_trade_all(trades)})
+
+    stats_json.update({"all_time_pnl":
+                      all_time_pnl(trades)})
     return stats_json
 
+def average_return_per_trade_all(trades):
+    total = 0
+    for trade in trades:
+        total = total + trade.get("swap") + trade.get("profit")
+
+    return round(total / len(trades), 2)
+
+def all_time_pnl(trades):
+    pnl=0
+    for trade in trades:
+        pnl = pnl + trade.get("swap") + trade.get("profit")
+    
+    return pnl
 
 def get_todays_pnl(trades):
     pnl=0
@@ -66,4 +84,4 @@ def get_average_trade_time(trades, trade_type):
                 diff = diff + delta.total_seconds()
 
     print(f"Number of Trades: {ntrades:}") 
-    return round(diff / ntrades)
+    return round(diff / ntradest)
