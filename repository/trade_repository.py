@@ -5,6 +5,7 @@ import mysql.connector
 import utils.converters as converters
 from dotenv import load_dotenv
 
+
 if not os.environ.get('IS_HEROKU', None):
     load_dotenv()
 
@@ -13,6 +14,19 @@ conn = mysql.connector.connect(user=os.environ.get("USERNAME"),
                                password=os.environ.get("PASSWORD"), 
                                host=os.environ.get("HOST"), 
                                database=os.environ.get("DATABASE"))
+
+
+def get_first_trade(accountID):
+    cursor = conn.cursor()
+    sql = """
+    SELECT MIN(opened) FROM trades_tb
+    WHERE accountID=%s
+    """
+    val = accountID
+    cursor.execute(sql, (val,))
+    res = cursor.fetchone()
+    cursor.close()
+    return res[0]
 
 
 def get_trades(accountID):
@@ -58,6 +72,7 @@ def trade_save(trade):
         conn.rollback()
         cursor.close()
         return "Error saving trade", 500
+
 
 def bulk_save_trades(trades):
     cursor = conn.cursor()
