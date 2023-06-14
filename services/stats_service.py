@@ -27,7 +27,33 @@ def build_statistics(accountID):
 
     stats_json.update({"all_time_pnl":
                       all_time_pnl(trades)})
+
+    trade_type_numbers = get_number_of_trade_types(trades)
+    stats_json.update({"number_of_losses":
+                      trade_type_numbers[1]})
+
+    stats_json.update({"number_wins":
+                      trade_type_numbers[0]})
+
+    stats_json.update({"number_nas":
+                      trade_type_numbers[2]})
+
     return stats_json
+
+
+def get_number_of_trade_types(trades):
+    wins=0
+    losses=0
+    nas=0
+    for trade in trades:
+        if trade.get('outcome') == "win":
+            wins+=1
+        elif trade.get('outcome') == "loss":
+            losses+=1
+        else:
+            nas+=1
+    return wins, losses, nas
+
 
 def average_return_per_trade_all(trades):
     total = 0
@@ -56,19 +82,14 @@ def get_todays_pnl(trades):
 def get_first_trade(accountID):
     return trade.get_first_trade(accountID)
 
+
 def get_days_since_first_trade(date):
     return trade.get_days_since_first_trade(date)
 
 
-
 def get_average_trade_time(trades, trade_type):
-    diff=0
     ntrades=0
-    if trade_type: 
-        print("Averaging winning trades")
-    else:
-        print("Averaging losing trades")
-
+    diff=0
     for trade in trades:
         t1 = dt.strptime(trade.get('opened'), time_format)
         t2 = dt.strptime(trade.get('closed'), time_format)
@@ -84,4 +105,4 @@ def get_average_trade_time(trades, trade_type):
                 diff = diff + delta.total_seconds()
 
     print(f"Number of Trades: {ntrades:}") 
-    return round(diff / ntradest)
+    return round(diff / ntrades)
