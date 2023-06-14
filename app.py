@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, make_response, request
+import json
 import logging
 import os
 from os.path import join, dirname, realpath
 from numpy import who
 import services.trade_service as trade
 import services.stats_service as stats
+import utils.crypto as crypto
 
 app = Flask(__name__)
 logging.basicConfig(level = logging.INFO)
@@ -44,13 +46,25 @@ def get_trades():
 @app.route('/newtrade', methods=['POST'])
 def add_new_trade():
     trade_data = request.get_json()
-    return trade.save_trade(trade_data)
+    if request.headers.get("HMAC_TRADE_DATA"):
+        if crypto.verify_request(os.environ.get("X-API-KEY"), json.dumps(trade_data), request.headers.get("HMAC_TRADE_DATA").upper()):
+            return trade.save_trade(trade_data)
+        else:
+            return make_response(jsonify("Verification Failed")), 401
+    else:
+        return make_response(jsonify("Verification Header missing")), 401
 
 
 @app.route('/bulktrades', methods=['POST'])
 def bulk_upload_trades():
-    trades = request.get_json()
-    return trade.bulk_save_trades(trades)
+    trade_data = request.get_json()
+    if request.headers.get("HMAC_TRADE_DATA"):
+        if crypto.verify_request(os.environ.get("X-API-KEY"), json.dumps(trade_data), request.headers.get("HMAC_TRADE_DATA").upper()):
+            return trade.bulk_save_trades(trade_data)
+        else:
+            return make_response(jsonify("Verification Failed")), 401
+    else:
+        return make_response(jsonify("Verification Header missing")), 401
 
 
 @app.route('/csvbulktrades', methods=['POST'])
@@ -64,10 +78,10 @@ def upload_file():
     return trade.bulk_save_trades_from_csv(file_path, accountID)
 
 
-@app.after_request
-def log_response(response):
-    logging.info(f"RESPONSE data = {response.get_data()}")
-    return response
+# @app.after_request
+# def log_response(response):
+#     logging.info(f"RESPONSE data = {rresponse.()}")
+#     return response
 
 
 @app.before_request
