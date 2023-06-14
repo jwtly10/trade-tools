@@ -1,12 +1,13 @@
 from flask import Flask, jsonify, make_response, request
+import logging
 import os
 from os.path import join, dirname, realpath
-
 from numpy import who
 import services.trade_service as trade
 import services.stats_service as stats
 
 app = Flask(__name__)
+logging.basicConfig(level = logging.INFO)
 
 UPLOAD_FOLDER = 'static/files'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -61,6 +62,19 @@ def upload_file():
         uploaded_file.save(file_path)
     
     return trade.bulk_save_trades_from_csv(file_path, accountID)
+
+
+@app.after_request
+def log_response(response):
+    logging.info(f"RESPONSE data = {response.get_data()}")
+    return response
+
+
+@app.before_request
+def log_request():
+    logging.info(f"NEW REQUEST method = {request.method} user-agent = {request.headers.get('User-Agent')} content-length = {request.headers.get('Content-Length')}")
+    pass
+
 
 if __name__ == '__main__':
     app.run
