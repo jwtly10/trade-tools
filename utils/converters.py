@@ -13,7 +13,7 @@ def bulk_determine_outcome(trades):
 
 
 def determine_outcome(trade):
-    if (trade.get('swap') + trade.get('profit') > 100):
+    if (trade.get('swap') + trade.get('profit') > 130):
         trade.update({'outcome':'win'})
     elif(trade.get('profit') == 0):
         trade.update({'outcome':'NA'})

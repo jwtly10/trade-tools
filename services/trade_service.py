@@ -26,4 +26,4 @@ def get_days_since_first_trade(date):
     today = datetime.utcnow()
     print(date)
     delta = today - date
-    return delta.days + 1
+    return delta.days

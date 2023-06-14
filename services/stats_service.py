@@ -37,6 +37,7 @@ def build_statistics(accountID):
 
     stats_json.update({"number_nas":
                       trade_type_numbers[2]})
+ 
 
     return stats_json
 
