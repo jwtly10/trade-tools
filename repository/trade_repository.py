@@ -5,6 +5,7 @@ import mysql.connector
 import utils.converters as converters
 from dotenv import load_dotenv
 
+
 if not os.environ.get('IS_HEROKU', None):
     load_dotenv()
 
@@ -13,6 +14,19 @@ conn = mysql.connector.connect(user=os.environ.get("USERNAME"),
                                password=os.environ.get("PASSWORD"), 
                                host=os.environ.get("HOST"), 
                                database=os.environ.get("DATABASE"))
+
+
+def get_first_trade(accountID):
+    cursor = conn.cursor()
+    sql = """
+    SELECT MIN(opened) FROM trades_tb
+    WHERE accountID=%s
+    """
+    val = accountID
+    cursor.execute(sql, (val,))
+    res = cursor.fetchone()
+    cursor.close()
+    return res[0]
 
 
 def get_trades(accountID):
@@ -39,7 +53,7 @@ def trade_save(trade):
     cursor = conn.cursor()
 
     sql = """
-    INSERT INTO trades_tb3 
+    INSERT IGNORE INTO trades_tb
     (ticketID, accountID, tradeType, symbol, price, sl, tp, swap, profit, closed, opened, outcome)
     VALUES
     (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
@@ -59,6 +73,7 @@ def trade_save(trade):
         cursor.close()
         return "Error saving trade", 500
 
+
 def bulk_save_trades(trades):
     cursor = conn.cursor()
 
@@ -66,9 +81,8 @@ def bulk_save_trades(trades):
     for trade in trades:
         trade = converters.determine_outcome(trade)
         val_trades.append((trade.get("ticketID"),trade.get("accountID"),trade.get("type"),trade.get("symbol"),trade.get("price"),trade.get("sl"),trade.get("tp"),trade.get("swap"),trade.get("profit"),trade.get("closed"),trade.get("opened"), trade.get("outcome")))
-
     sql = """
-    INSERT INTO trades_tb 
+    INSERT IGNORE INTO trades_tb 
     (ticketID, accountID, tradeType, symbol, price, sl, tp, swap, profit, closed, opened, outcome)
     VALUES
     (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)

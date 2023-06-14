@@ -1,8 +1,15 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, make_response, request
+import os
+from os.path import join, dirname, realpath
+
+from numpy import who
 import services.trade_service as trade
 import services.stats_service as stats
 
 app = Flask(__name__)
+
+UPLOAD_FOLDER = 'static/files'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/gettradestats")
 def get_trade_stats():
@@ -10,8 +17,10 @@ def get_trade_stats():
     accountID = request.args.get('accountID')
     stats_json = stats.build_statistics(accountID)
 
-
-    return jsonify(stats_json), 200
+    response = make_response(jsonify(stats_json))
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    
+    return response,  200
 
 
 @app.route("/gettrades")
@@ -23,7 +32,10 @@ def get_trades():
         if not trades: 
             return f"No trades found for Account {accountID}", 400
         else:
-            return jsonify(trades), 200
+            response = make_response(jsonify(trades))
+            response.headers.add('Access-Control-Allow-Origin', '*')
+
+            return response, 200
     else:
         return 'Account id is missing', 400
 
@@ -40,5 +52,15 @@ def bulk_upload_trades():
     return trade.bulk_save_trades(trades)
 
 
+@app.route('/csvbulktrades', methods=['POST'])
+def upload_file():
+    accountID  = request.args.get("accountID")
+    uploaded_file = request.files['file']
+    if uploaded_file.filename != '':
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
+        uploaded_file.save(file_path)
+    
+    return trade.bulk_save_trades_from_csv(file_path, accountID)
+
 if __name__ == '__main__':
-    app.run()
+    app.run
