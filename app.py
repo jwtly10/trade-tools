@@ -59,7 +59,7 @@ def add_new_trade():
 def bulk_upload_trades():
     trade_data = request.get_json()
     if request.headers.get("HMAC_TRADE_DATA"):
-        if crypto.verify_request(os.environ.get("X-API-KEY"), json.dumps(trade_data), request.headers.get("HMAC_TRADE_DATA").upper()):
+        if crypto.verify_request(os.environ.get("X-API-KEY"), json.dumps(trade_data).replace(": ", ":").replace(", ", ","), request.headers.get("HMAC_TRADE_DATA").upper()):
             return trade.bulk_save_trades(trade_data)
         else:
             return make_response(jsonify("Verification Failed")), 401
@@ -78,10 +78,10 @@ def upload_file():
     return trade.bulk_save_trades_from_csv(file_path, accountID)
 
 
-# @app.after_request
-# def log_response(response):
-#     logging.info(f"RESPONSE data = {rresponse.()}")
-#     return response
+@app.after_request
+def log_response(response):
+    logging.info(f"RESPONSE data = {response.get_data()}")
+    return response
 
 
 @app.before_request
