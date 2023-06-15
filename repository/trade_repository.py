@@ -54,13 +54,13 @@ def trade_save(trade):
 
     sql = """
     INSERT IGNORE INTO trades_tb
-    (ticketID, accountID, tradeType, symbol, price, sl, tp, swap, profit, closed, opened, outcome)
+    (ticketID, accountID, tradeType, symbol, size, price, sl, tp, swap, profit, closed, opened, outcome)
     VALUES
-    (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """
 
     trade = converters.determine_outcome(trade)
-    val = trade.get("ticketID"),trade.get("accountID"),trade.get("type"),trade.get("symbol"),trade.get("price"),trade.get("sl"),trade.get("tp"),trade.get("swap"),trade.get("profit"),trade.get("closed"),trade.get("opened"), trade.get("outcome")
+    val = trade.get("ticketID"),trade.get("accountID"),trade.get("type"),trade.get("symbol"),trade.get("size"), trade.get("price"),trade.get("sl"),trade.get("tp"),trade.get("swap"),trade.get("profit"),trade.get("closed"),trade.get("opened"), trade.get("outcome")
 
     try:
         cursor.execute(sql, val)
@@ -80,12 +80,12 @@ def bulk_save_trades(trades):
     val_trades = []
     for trade in trades:
         trade = converters.determine_outcome(trade)
-        val_trades.append((trade.get("ticketID"),trade.get("accountID"),trade.get("type"),trade.get("symbol"),trade.get("price"),trade.get("sl"),trade.get("tp"),trade.get("swap"),trade.get("profit"),trade.get("closed"),trade.get("opened"), trade.get("outcome")))
+        val_trades.append((trade.get("ticketID"),trade.get("accountID"),trade.get("type"),trade.get("symbol"),trade.get("size"), trade.get("price"),trade.get("sl"),trade.get("tp"),trade.get("swap"),trade.get("profit"),trade.get("closed"),trade.get("opened"), trade.get("outcome")))
     sql = """
     INSERT IGNORE INTO trades_tb 
-    (ticketID, accountID, tradeType, symbol, price, sl, tp, swap, profit, closed, opened, outcome)
+    (ticketID, accountID, tradeType, symbol, size, price, sl, tp, swap, profit, closed, opened, outcome)
     VALUES
-    (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """
 
     try: 
