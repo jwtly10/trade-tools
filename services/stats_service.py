@@ -36,7 +36,10 @@ def build_statistics(accountID):
                       trade_type_numbers[0]})
 
     stats_json.update({"number_nas":
-                      trade_type_numbers[2]})
+                       trade_type_numbers[2]})
+
+    stats_json.update({"number_of_valid_trades":
+                       trade_type_numbers[3]})
  
 
     return stats_json
@@ -46,6 +49,7 @@ def get_number_of_trade_types(trades):
     wins=0
     losses=0
     nas=0
+    valid=0
     for trade in trades:
         if trade.get('outcome') == "win":
             wins+=1
@@ -53,7 +57,8 @@ def get_number_of_trade_types(trades):
             losses+=1
         else:
             nas+=1
-    return wins, losses, nas
+    valid = wins+losses
+    return wins, losses, nas, valid
 
 
 def average_return_per_trade_all(trades):
