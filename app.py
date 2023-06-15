@@ -78,10 +78,10 @@ def upload_file():
     return trade.bulk_save_trades_from_csv(file_path, accountID)
 
 
-@app.after_request
-def log_response(response):
-    logging.info(f"RESPONSE data = {response.get_data()}")
-    return response
+# @app.after_request
+# def log_response(response):
+#     logging.info(f"RESPONSE data = {response.get_data()}")
+#     return response
 
 
 @app.before_request
