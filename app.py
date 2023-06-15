@@ -47,7 +47,7 @@ def get_trades():
 def add_new_trade():
     trade_data = request.get_json()
     if request.headers.get("HMAC_TRADE_DATA"):
-        if crypto.verify_request(os.environ.get("X-API-KEY"), json.dumps(trade_data), request.headers.get("HMAC_TRADE_DATA").upper()):
+        if crypto.verify_request(os.environ.get("X-API-KEY"), json.dumps(trade_data).replace(": ", ":").replace(", ", ","), request.headers.get("HMAC_TRADE_DATA").upper()):
             return trade.save_trade(trade_data)
         else:
             return make_response(jsonify("Verification Failed")), 401

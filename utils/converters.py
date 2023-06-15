@@ -13,11 +13,11 @@ def bulk_determine_outcome(trades):
 
 
 def determine_outcome(trade):
-    if (trade.get('swap') + trade.get('profit') > 130):
+    if (float(trade.get('swap')) + float(trade.get('profit')) > 130):
         trade.update({'outcome':'win'})
-    elif(trade.get('profit') == 0):
+    elif(float(trade.get('profit')) == 0):
         trade.update({'outcome':'NA'})
-    elif (trade.get('swap') + trade.get('profit') < -25):
+    elif (float(trade.get('swap')) + float(trade.get('profit')) < -25):
         trade.update({'outcome':'loss'})
     else:
         trade.update({'outcome':'NA'})
