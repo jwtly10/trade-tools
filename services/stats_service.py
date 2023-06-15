@@ -110,5 +110,4 @@ def get_average_trade_time(trades, trade_type):
                 ntrades+=1
                 diff = diff + delta.total_seconds()
 
-    print(f"Number of Trades: {ntrades:}") 
     return round(diff / ntrades)

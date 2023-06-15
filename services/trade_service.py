@@ -12,6 +12,10 @@ def save_trade(trade):
     return data.trade_save(trade)
 
 
+def save_meta_data(meta_data, ticketid):
+    return data.save_meta_data(meta_data, ticketid)
+
+
 def bulk_save_trades_from_csv(file, accountID):
     trades = csv.read_trade_csv_file(file, accountID) 
     return data.bulk_save_trades(trades);
@@ -24,6 +28,5 @@ def get_first_trade(accountID):
 
 def get_days_since_first_trade(date):
     today = datetime.utcnow()
-    print(date)
     delta = today - date
     return delta.days

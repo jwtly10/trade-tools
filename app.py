@@ -26,21 +26,21 @@ def get_trade_stats():
     return response,  200
 
 
-@app.route("/gettrades")
-def get_trades():
-    trades=[]
-    accountID = request.args.get('accountID')
-    if accountID:
-        trades = trade.get_trades_for_account(accountID) 
-        if not trades: 
-            return f"No trades found for Account {accountID}", 400
-        else:
-            response = make_response(jsonify(trades))
-            response.headers.add('Access-Control-Allow-Origin', '*')
+# @app.route("/gettrades")
+# def get_trades():
+#     trades=[]
+#     accountID = request.args.get('accountID')
+#     if accountID:
+#         trades = trade.get_trades_for_account(accountID) 
+#         if not trades: 
+#             return f"No trades found for Account {accountID}", 400
+#         else:
+#             response = make_response(jsonify(trades))
+#             response.headers.add('Access-Control-Allow-Origin', '*')
 
-            return response, 200
-    else:
-        return 'Account id is missing', 400
+#             return response, 200
+#     else:
+#         return 'Account id is missing', 400
 
 
 @app.route('/newtrade', methods=['POST'])
@@ -54,6 +54,20 @@ def add_new_trade():
     else:
         return make_response(jsonify("Verification Header missing")), 401
 
+@app.route('/submitmetadata', methods=['POST'])
+def add_meta_data():
+    meta_data = request.get_json()
+    ticketid = request.args.get('ticketid')
+    return make_response(jsonify("Not implemented yet."))
+    # return trade.save_meta_data(meta_data, ticketid)
+    # if request.headers.get("HMAC_TRADE_DATA"):
+    #     if crypto.verify_request(os.environ.get("X-API-KEY"), json.dumps(meta_data).replace(": ", ":").replace(", ", ","), request.headers.get("HMAC_TRADE_DATA").upper()):
+    #         return trade.save_meta_data(meta_data)
+    #     else:
+    #         return make_response(jsonify("Verification Failed")), 401
+    # else:
+    #     return make_response(jsonify("Verification Header missing")), 401
+    
 
 @app.route('/bulktrades', methods=['POST'])
 def bulk_upload_trades():

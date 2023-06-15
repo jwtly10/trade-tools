@@ -49,6 +49,17 @@ def get_trades(accountID):
     return res
 
 
+def save_meta_data(meta_data, ticketid):
+    cursor = conn.cursor()
+
+    sql = """
+    INSERT IGNORE INTO meta_trades_tb
+    (ticketID, atr_val, atr_diff_prev_5, ma_val, ma_diff_prev_5, rsi)
+    """
+
+
+
+
 def trade_save(trade):
     cursor = conn.cursor()
 
