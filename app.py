@@ -1,12 +1,15 @@
 from flask import Flask, jsonify, make_response, request
+import json
+import logging
 import os
 from os.path import join, dirname, realpath
-
 from numpy import who
 import services.trade_service as trade
 import services.stats_service as stats
+import utils.crypto as crypto
 
 app = Flask(__name__)
+logging.basicConfig(level = logging.INFO)
 
 UPLOAD_FOLDER = 'static/files'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -43,13 +46,25 @@ def get_trades():
 @app.route('/newtrade', methods=['POST'])
 def add_new_trade():
     trade_data = request.get_json()
-    return trade.save_trade(trade_data)
+    if request.headers.get("HMAC_TRADE_DATA"):
+        if crypto.verify_request(os.environ.get("X-API-KEY"), json.dumps(trade_data).replace(": ", ":").replace(", ", ","), request.headers.get("HMAC_TRADE_DATA").upper()):
+            return trade.save_trade(trade_data)
+        else:
+            return make_response(jsonify("Verification Failed")), 401
+    else:
+        return make_response(jsonify("Verification Header missing")), 401
 
 
 @app.route('/bulktrades', methods=['POST'])
 def bulk_upload_trades():
-    trades = request.get_json()
-    return trade.bulk_save_trades(trades)
+    trade_data = request.get_json()
+    if request.headers.get("HMAC_TRADE_DATA"):
+        if crypto.verify_request(os.environ.get("X-API-KEY"), json.dumps(trade_data).replace(": ", ":").replace(", ", ","), request.headers.get("HMAC_TRADE_DATA").upper()):
+            return trade.bulk_save_trades(trade_data)
+        else:
+            return make_response(jsonify("Verification Failed")), 401
+    else:
+        return make_response(jsonify("Verification Header missing")), 401
 
 
 @app.route('/csvbulktrades', methods=['POST'])
@@ -61,6 +76,19 @@ def upload_file():
         uploaded_file.save(file_path)
     
     return trade.bulk_save_trades_from_csv(file_path, accountID)
+
+
+@app.after_request
+def log_response(response):
+    logging.info(f"RESPONSE data = {response.get_data()}")
+    return response
+
+
+@app.before_request
+def log_request():
+    logging.info(f"NEW REQUEST method = {request.method} user-agent = {request.headers.get('User-Agent')} content-length = {request.headers.get('Content-Length')}")
+    pass
+
 
 if __name__ == '__main__':
     app.run
