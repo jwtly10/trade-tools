@@ -29,3 +29,48 @@ def read_trade_csv_file(inputfile, accountID):
     
     return trades
 
+
+def read_meta_data_csv_file(inputfile):
+    meta_rows = []
+    data = {}
+
+    my_converter = {'ticketID': str}
+    df = pd.read_csv(inputfile, converters=my_converter)
+    
+    for row in range(len(df.index)):
+        try:
+           # Put everything in a list of dictionaries
+           data.update({'ticketID':str(df.iloc[row]['ticketID'])})
+           data.update({'atrVal':str(df.iloc[row]['atrVal'])})
+           data.update({'atrVal5Diff':str(df.iloc[row]['atrVal5Diff'])})
+           data.update({'maVal':str(df.iloc[row]['maVal'])})
+           data.update({'maVal5Diff':str(df.iloc[row]['maVal5Diff'])})
+           data.update({'maValDist':str(df.iloc[row]['maValDist'])})
+           data.update({'rsiVal':str(df.iloc[row]['rsiVal'])})
+           data.update({'rsiVal5Diff':str(df.iloc[row]['rsiVal5Diff'])})
+               
+           meta_rows.append(data.copy())
+        except Exception as e:
+            print(f'Error: {e}')
+    
+    return meta_rows
+
+
+def read_result_data_csv_file(inputfile):
+    result_rows = []
+    data = {}
+
+    my_converter = {'ticketid': str}
+    df = pd.read_csv(inputfile, converters=my_converter)
+    
+    for row in range(len(df.index)):
+        try:
+           # Put everything in a list of dictionaries
+           data.update({'ticketID':str(df.iloc[row]['ticketid'])})
+           data.update({'result':str(df.iloc[row]['result'])})
+               
+           result_rows.append(data.copy())
+        except Exception as e:
+            print(f'Error: {e}')
+    
+    return result_rows

@@ -26,23 +26,6 @@ def get_trade_stats():
     return response,  200
 
 
-# @app.route("/gettrades")
-# def get_trades():
-#     trades=[]
-#     accountID = request.args.get('accountID')
-#     if accountID:
-#         trades = trade.get_trades_for_account(accountID) 
-#         if not trades: 
-#             return f"No trades found for Account {accountID}", 400
-#         else:
-#             response = make_response(jsonify(trades))
-#             response.headers.add('Access-Control-Allow-Origin', '*')
-
-#             return response, 200
-#     else:
-#         return 'Account id is missing', 400
-
-
 @app.route('/newtrade', methods=['POST'])
 def add_new_trade():
     trade_data = request.get_json()
@@ -54,20 +37,39 @@ def add_new_trade():
     else:
         return make_response(jsonify("Verification Header missing")), 401
 
-@app.route('/submitmetadata', methods=['POST'])
+
+@app.route('/submitcsvmetadata', methods=['POST'])
 def add_meta_data():
-    meta_data = request.get_json()
-    ticketid = request.args.get('ticketid')
-    return make_response(jsonify("Not implemented yet."))
-    # return trade.save_meta_data(meta_data, ticketid)
-    # if request.headers.get("HMAC_TRADE_DATA"):
-    #     if crypto.verify_request(os.environ.get("X-API-KEY"), json.dumps(meta_data).replace(": ", ":").replace(", ", ","), request.headers.get("HMAC_TRADE_DATA").upper()):
-    #         return trade.save_meta_data(meta_data)
-    #     else:
-    #         return make_response(jsonify("Verification Failed")), 401
-    # else:
-    #     return make_response(jsonify("Verification Header missing")), 401
-    
+    if request.headers.get("HMAC_TRADE_DATA"):
+        if crypto.verify_request(os.environ.get("X-API-KEY"), request.headers.get("API_SECRET"), request.headers.get("HMAC_TRADE_DATA").upper()):
+            uploaded_file = request.files['file']
+            if uploaded_file.filename != '':
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
+                uploaded_file.save(file_path)
+                return trade.meta_data_save_from_csv(file_path)
+            else:
+                return make_response(jsonify("Please add Meta Data CSV File")), 404
+        else:
+            return make_response(jsonify("Verification Failed")), 401
+    else: 
+        return make_response(jsonify("Verification Header missing")), 401
+
+
+@app.route('/submitcsvresultdata', methods=['POST'])
+def add_meta_data():
+    if request.headers.get("HMAC_TRADE_DATA"):
+        if crypto.verify_request(os.environ.get("X-API-KEY"), request.headers.get("API_SECRET"), request.headers.get("HMAC_TRADE_DATA").upper()):
+            uploaded_file = request.files['file']
+            if uploaded_file.filename != '':
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
+                uploaded_file.save(file_path)
+                return trade.result_data_save_from_csv(file_path)
+            else:
+                return make_response(jsonify("Please add Result Data CSV File")), 404
+        else:
+            return make_response(jsonify("Verification Failed")), 401
+    else: 
+        return make_response(jsonify("Verification Header missing")), 401
 
 @app.route('/bulktrades', methods=['POST'])
 def bulk_upload_trades():
@@ -83,19 +85,26 @@ def bulk_upload_trades():
 
 @app.route('/csvbulktrades', methods=['POST'])
 def upload_file():
-    accountID  = request.args.get("accountID")
-    uploaded_file = request.files['file']
-    if uploaded_file.filename != '':
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
-        uploaded_file.save(file_path)
-    
-    return trade.bulk_save_trades_from_csv(file_path, accountID)
+    if request.headers.get("HMAC_TRADE_DATA"):
+        if crypto.verify_request(os.environ.get("X-API-KEY"), request.headers.get("API_SECRET"), request.headers.get("HMAC_TRADE_DATA").upper()):
+            accountID  = request.args.get("accountID")
+            uploaded_file = request.files['file']
+            if uploaded_file.filename != '':
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
+                uploaded_file.save(file_path)
+                return trade.bulk_save_trades_from_csv(file_path, accountID)
+            else:
+                return make_response(jsonify("Please add Bulk Trade file")), 404
+        else:
+            return make_response(jsonify("Verification Failed")), 401
+    else: 
+        return make_response(jsonify("Verification Header missing")), 401
 
 
-# @app.after_request
-# def log_response(response):
-#     logging.info(f"RESPONSE data = {response.get_data()}")
-#     return response
+@app.after_request
+def log_response(response):
+    logging.info(f"RESPONSE data = {response.get_data()}")
+    return response
 
 
 @app.before_request

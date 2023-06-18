@@ -12,19 +12,27 @@ def save_trade(trade):
     return data.trade_save(trade)
 
 
-def save_meta_data(meta_data, ticketid):
-    return data.save_meta_data(meta_data, ticketid)
+def meta_data_save_from_csv(file):
+    rows = csv.read_meta_data_csv_file(file)
+    return data.save_meta_data(rows)
+
+def result_data_save_from_csv(file):
+    rows = csv.read_result_data_csv_file(file)
+    return data.update_result_rows(rows)
 
 
 def bulk_save_trades_from_csv(file, accountID):
     trades = csv.read_trade_csv_file(file, accountID) 
-    return data.bulk_save_trades(trades);
+    return data.bulk_save_trades(trades)
+
 
 def bulk_save_trades(trades):
     return data.bulk_save_trades(trades)
 
+
 def get_first_trade(accountID):
     return data.get_first_trade(accountID)
+
 
 def get_days_since_first_trade(date):
     today = datetime.utcnow()

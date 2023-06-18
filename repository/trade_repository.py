@@ -49,16 +49,6 @@ def get_trades(accountID):
     return res
 
 
-def save_meta_data(meta_data, ticketid):
-    cursor = conn.cursor()
-
-    sql = """
-    INSERT IGNORE INTO meta_trades_tb
-    (ticketID, atr_val, atr_diff_prev_5, ma_val, ma_diff_prev_5, rsi)
-    """
-
-
-
 
 def trade_save(trade):
     cursor = conn.cursor()
@@ -109,3 +99,55 @@ def bulk_save_trades(trades):
         conn.rollback()
         cursor.close()
         return "Error bulk saving trades", 500
+
+
+def save_meta_data(meta_data):
+    cursor = conn.cursor()
+    
+    vals = []
+
+    for val in meta_data:
+        vals.append((val.get("ticketID"), val.get("atrVal"), val.get("atrVal5Diff"), val.get("maVal"), val.get("maVal5Diff"), val.get("maValDist"), val.get("rsiVal"), val.get("rsiVal5Diff")))
+
+    sql = """
+    INSERT IGNORE INTO meta_data_tb
+    (ticketID, atrVal, atrVDiff, maVal, maValDiff, maValDist, rsiVal, rsiValDiff)
+    VALUES
+    (%s,%s,%s,%s,%s,%s,%s,%s)
+    """
+
+    try:
+        cursor.executemany(sql, vals)
+        conn.commit()
+        cursor.close()
+        return jsonify("Meta Data Saved"), 200
+    except Exception:
+        print(traceback.format_exc())
+        conn.rollback()
+        cursor.close()
+        return "Error Storing Meta Data", 500
+
+
+def update_result_rows(result_rows):
+    cursor = conn.cusor()
+
+    vals = []
+
+    for val in results_rows:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
