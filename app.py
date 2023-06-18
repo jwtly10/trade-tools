@@ -56,7 +56,7 @@ def add_meta_data():
 
 
 @app.route('/submitcsvresultdata', methods=['POST'])
-def add_meta_data():
+def update_meta_data():
     if request.headers.get("HMAC_TRADE_DATA"):
         if crypto.verify_request(os.environ.get("X-API-KEY"), request.headers.get("API_SECRET"), request.headers.get("HMAC_TRADE_DATA").upper()):
             uploaded_file = request.files['file']
@@ -70,6 +70,7 @@ def add_meta_data():
             return make_response(jsonify("Verification Failed")), 401
     else: 
         return make_response(jsonify("Verification Header missing")), 401
+    
 
 @app.route('/bulktrades', methods=['POST'])
 def bulk_upload_trades():

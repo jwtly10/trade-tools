@@ -129,25 +129,33 @@ def save_meta_data(meta_data):
 
 
 def update_result_rows(result_rows):
-    cursor = conn.cusor()
+    cursor = conn.cursor()
+    count=0 
+    sql = """
+        UPDATE meta_data_tb SET result = %s
+        WHERE ticketID = %s
+    """
+    for row in result_rows:
+        if outcomeCheck(row.get("result") != "na"):
+            try:
+                cursor.execute(sql, (outcomeCheck(float(row.get("result"))), row.get("ticketID")))
+                conn.commit()
+                count+=1
+                if (int(row.get("ticketID")) % 100 == 0):
+                    print("Successfully Committed Row: "+row.get("ticketID"))
+            except Exception:
+                print(traceback.format_exc())
+                conn.rollback()
+                cursor.close()
+                return "Error Storing Meta Data", 500
+    return "Result Data Saved", 200
 
-    vals = []
 
-    for val in results_rows:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def outcomeCheck(res):
+    if res > 100:
+        return "win"
+    elif res < 25:
+        return "loss"
+    else:
+        return "na"
 
