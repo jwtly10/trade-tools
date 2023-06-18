@@ -39,9 +39,8 @@ Technologies:
 	<code><img width="50" src="https://user-images.githubusercontent.com/25181517/192107854-765620d7-f909-4953-a6da-36e1ef69eea6.png" alt="HTTP" title="HTTP"/></code>
 	<code><img width="50" src="https://user-images.githubusercontent.com/25181517/183423775-2276e25d-d43d-4e58-890b-edbc88e915f7.png" alt="Flask" title="Flask"/></code>
 </div>
-
+<br>
 Python Flask webserver which connects to MySQL database hosted with AWS.
-
 
 POST requests to the api require an API key which is used to hash the request body so the server knows the request was from my trusted applications.
 
